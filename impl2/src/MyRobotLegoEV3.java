@@ -18,6 +18,12 @@ public class MyRobotLegoEV3 {
     public Queue<Passo> movement_queue;
     public boolean is_stopping = false;
 
+    // ── Sensor ──────────────────────────────────────────────────────────────────
+
+    public double distanciaSensorAnterior; 
+    public double distanciaParede;
+    public double anguloParede;
+
     // ── Estado da reta ──────────────────────────────────────────────────────────
 
     public enum EstadoReta { IDLE, CALCULAR, VALIDAR, ESPERAR, PARAR }
@@ -52,6 +58,7 @@ public class MyRobotLegoEV3 {
     }
 
     // ── Ligação ─────────────────────────────────────────────────────────────────
+
 
     public boolean OpenEV3(String robotName) {
         if (!connected) connected = robot.OpenEV3(robotName);
@@ -123,6 +130,10 @@ public class MyRobotLegoEV3 {
             double rotation = Math.toRadians(robot.RotationCount(robot.OUT_B)) - wheelAngleStart;
             double delta    = rotation - deslocamentoAnterior;
             deslocamentoAnterior = rotation;
+            double sensorDistancia = robot.SensorUS(2)/255;
+            anguloParede = Colisao.anguloParede(distanciaSensorAnterior, sensorDistancia, delta);
+            distanciaParede = Colisao.distanciaPerpendicularParede(distanciaSensorAnterior, sensorDistancia, delta);
+            distanciaSensorAnterior = sensorDistancia;
             if (preditor) rotation += delta;
             if (wheelAngleRequired > 0) {
                 if (rotation > wheelAngleRequired) estadoReta = EstadoReta.PARAR;
