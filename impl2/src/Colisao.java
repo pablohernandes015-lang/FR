@@ -8,6 +8,4 @@ public class Colisao {
         double a = anguloParede(dist0, dist1, drobot1);
         return dist1 * Math.cos(a);
     }
-
-    public static double 
 }
